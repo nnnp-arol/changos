@@ -11,6 +11,7 @@ import { useSnackbar } from "notistack";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 import { Task } from "./utils/interfaces";
+import { profiles } from "./utils/profiles";
 
 type labelsType = {
   title: string;
@@ -38,6 +39,8 @@ const taskInit = {
   sprint: "",
 };
 
+const userInit = { user: "", password: "", img: "" };
+
 function App() {
   const [taskModal, setTaskModal] = useState<boolean>(false);
   const [copyModal, setCopyModal] = useState<boolean>(false);
@@ -46,11 +49,17 @@ function App() {
   const [branch, setBranch] = useState<string>("");
   const [orderBy, setOrderBy] = useState<string>("ticket");
   const [clickedTask, setClickedTask] = useState<Task | "">("");
+  const [user, setUser] = useState(userInit);
+  const [loggedUser, setLoggedUser] = useState(userInit);
+
+  const [login, setLogin] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
+
   const snackBar = useSnackbar();
 
   const { data } = useQuery({ queryKey: ["getTasks"], queryFn: getTasks });
+
   const { mutate: addTask } = useMutation(createTask, {
     onSuccess: () => {
       setTask(taskInit);
@@ -98,6 +107,26 @@ function App() {
       sprint: item.sprint,
     });
     setTaskModal(true);
+  };
+
+  const handleLogin = () => {
+    const foundProfile = profiles.filter((p) => {
+      if (user.user === p.user && user.password === p.password) {
+        setLogin(true);
+        setLoggedUser(p);
+        return p;
+      }
+      return;
+    });
+    if (!foundProfile.length) {
+      return snackBar.enqueueSnackbar(`user or password is wrong`, {
+        variant: "error",
+      });
+    }
+    snackBar.enqueueSnackbar(`welcome back ${user.user}`, {
+      variant: "default",
+    });
+    return setUser(userInit);
   };
 
   const handleChange = (
@@ -148,7 +177,7 @@ function App() {
   }) => JSX.Element = ({ label, size }) => {
     return (
       <div
-        className={`flex ${size} overflow-hidden justify-start items-center py-2 text-slate-400`}
+        className={`flex ${size} overflow-hidden justify-start items-center py-2 text-slate-300`}
       >
         {label}
       </div>
@@ -162,9 +191,16 @@ function App() {
     }-${desc.replaceAll(",", "")}`;
     return (
       <div
-        className="flex border-b justify-center flex-row h-10 px-5 py-2"
+        className={`flex border-b border-opacity-10 border-slate-200 justify-center flex-row h-10 px-5 py-2 cursor-pointer ${
+          item.done ? "opacity-20" : null
+        }`}
         key={item.description}
         onDoubleClick={() => {
+          if (!login) {
+            return snackBar.enqueueSnackbar("you must first log in", {
+              variant: "error",
+            });
+          }
           openTask(item);
         }}
       >
@@ -198,6 +234,11 @@ function App() {
           <button
             className="w-7 h-7"
             onClick={() => {
+              if (!login) {
+                return snackBar.enqueueSnackbar("you must first log in", {
+                  variant: "error",
+                });
+              }
               if (item && item._id) {
                 removeTask(item._id);
               }
@@ -213,18 +254,109 @@ function App() {
   const modalRow = "flex flex-row w-full justify-between gap-5";
 
   return (
-    <div className="bg-slate-200 flex flex-1 h-screen justify-start flex-col">
-      <div className="w-full text-center">
-        <h1 className="text-4xl">CHANGOS</h1>
+    <div className="bg-slate-950 flex flex-1 h-screen justify-start flex-col">
+      <div className="flex w-full text-center  justify-center items-center">
+        <div className="flex flex-1 justify-center">
+          <h1 className="text-4xl text-white">CHANGOS</h1>
+        </div>
+        <div className="flex flex-row gap-5 p-4">
+          {!login ? (
+            <div className="flex flex-col gap-2">
+              <input
+                type="text"
+                className="border pl-2 bg-slate-950 text-white"
+                placeholder="user"
+                value={user.user}
+                onChange={(e) =>
+                  setUser((prev) => {
+                    return { ...prev, user: e.target.value };
+                  })
+                }
+              />
+              <input
+                type="password"
+                className="border pl-2 bg-slate-950 text-white"
+                placeholder="password"
+                value={user.password}
+                onChange={(e) =>
+                  setUser((prev) => {
+                    return { ...prev, password: e.target.value };
+                  })
+                }
+              />
+              <Button
+                variant="contained"
+                color="error"
+                size="small"
+                onClick={() => {
+                  handleLogin();
+                }}
+              >
+                login
+              </Button>
+            </div>
+          ) : (
+            <div className="py-2 px-14">
+              <img src={loggedUser.img} className="w-20 h-20 rounded-full" />
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex flex-1 bg-slate-600 px-20 flex-col">
-        <div className="py-5">
-          <Button variant="contained" onClick={() => setTaskModal(true)}>
-            create task
-          </Button>
+        <div className="py-5 flex justify-between">
+          <div className="flex h-full justify-center items-end">
+            <Button
+              variant="contained"
+              onClick={() => setTaskModal(true)}
+              disabled={!login}
+            >
+              create task
+            </Button>
+          </div>
+          {/* <div className="flex flex-row gap-5">
+            {!login ? (
+              <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  className="border pl-2 bg-slate-950 text-white"
+                  placeholder="user"
+                  value={user.user}
+                  onChange={(e) =>
+                    setUser((prev) => {
+                      return { ...prev, user: e.target.value };
+                    })
+                  }
+                />
+                <input
+                  type="password"
+                  className="border pl-2 bg-slate-950 text-white"
+                  placeholder="password"
+                  value={user.password}
+                  onChange={(e) =>
+                    setUser((prev) => {
+                      return { ...prev, password: e.target.value };
+                    })
+                  }
+                />
+                <Button
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  onClick={handleLogin}
+                >
+                  login
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <img src={loggedUser.img} className="w-20 h-20 rounded-full" />
+              </div>
+            )}
+          </div> */}
         </div>
+
         <Header labels={labels} />
-        <div className="flex flex-col h-full bg-slate-900">
+        <div className="flex flex-col h-3/4 bg-slate-900 overflow-y-auto">
           {data &&
             data
               .sort((a: any, b: any) => {
