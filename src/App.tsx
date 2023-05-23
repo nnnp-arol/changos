@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTask, getTasks, updateTask, deleteTask } from "./api/task.api";
@@ -58,7 +58,7 @@ function App() {
 
   const snackBar = useSnackbar();
 
-  const { data, refetch } = useQuery({
+  const { data } = useQuery({
     queryKey: ["getTasks"],
     queryFn: getTasks,
   });
@@ -356,9 +356,9 @@ function App() {
         onConfirm={() => {
           if (editMode) {
             const obj = { id: !!clickedTask && clickedTask._id, task: task };
-            setTaskModal(false);
             setEditMode(false);
-            return editTask(obj);
+            editTask(obj);
+            return setTaskModal(false);
           }
           addTask(task);
           setTaskModal(false);
