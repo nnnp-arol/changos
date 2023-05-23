@@ -58,7 +58,10 @@ function App() {
 
   const snackBar = useSnackbar();
 
-  const { data } = useQuery({ queryKey: ["getTasks"], queryFn: getTasks });
+  const { data, refetch } = useQuery({
+    queryKey: ["getTasks"],
+    queryFn: getTasks,
+  });
 
   const { mutate: addTask } = useMutation(createTask, {
     onSuccess: () => {
@@ -68,28 +71,37 @@ function App() {
         variant: "success",
       });
     },
+    onError: () => {
+      snackBar.enqueueSnackbar("There was a problem", {
+        variant: "error",
+      });
+    },
   });
   const { mutate: editTask } = useMutation(updateTask, {
     onSuccess: () => {
       setTask(taskInit);
       queryClient.invalidateQueries(["getTasks"]);
-      return snackBar.enqueueSnackbar("Task updated successfully", {
+      snackBar.enqueueSnackbar("Task updated successfully", {
         variant: "success",
       });
     },
     onError: () => {
-      return;
+      snackBar.enqueueSnackbar("There was a problem", {
+        variant: "error",
+      });
     },
   });
   const { mutate: removeTask } = useMutation(deleteTask, {
     onSuccess: () => {
       queryClient.invalidateQueries(["getTasks"]);
-      return snackBar.enqueueSnackbar("Task deleted successfully", {
+      snackBar.enqueueSnackbar("Task deleted successfully", {
         variant: "success",
       });
     },
     onError: () => {
-      return;
+      snackBar.enqueueSnackbar("There was a problem", {
+        variant: "error",
+      });
     },
   });
 
@@ -192,7 +204,7 @@ function App() {
     return (
       <div
         className={`flex border-b border-opacity-10 border-slate-200 justify-center flex-row h-10 px-5 py-2 cursor-pointer ${
-          item.done ? "opacity-20" : null
+          item.enviroment === "production" ? "opacity-20" : null
         }`}
         key={item.description}
         onDoubleClick={() => {
@@ -313,46 +325,6 @@ function App() {
               create task
             </Button>
           </div>
-          {/* <div className="flex flex-row gap-5">
-            {!login ? (
-              <div className="flex flex-col gap-2">
-                <input
-                  type="text"
-                  className="border pl-2 bg-slate-950 text-white"
-                  placeholder="user"
-                  value={user.user}
-                  onChange={(e) =>
-                    setUser((prev) => {
-                      return { ...prev, user: e.target.value };
-                    })
-                  }
-                />
-                <input
-                  type="password"
-                  className="border pl-2 bg-slate-950 text-white"
-                  placeholder="password"
-                  value={user.password}
-                  onChange={(e) =>
-                    setUser((prev) => {
-                      return { ...prev, password: e.target.value };
-                    })
-                  }
-                />
-                <Button
-                  variant="contained"
-                  color="error"
-                  size="small"
-                  onClick={handleLogin}
-                >
-                  login
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <img src={loggedUser.img} className="w-20 h-20 rounded-full" />
-              </div>
-            )}
-          </div> */}
         </div>
 
         <Header labels={labels} />
