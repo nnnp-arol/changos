@@ -12,6 +12,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 import { Task } from "./utils/interfaces";
 import { profiles } from "./utils/profiles";
+import nnnp from "../public/nnnpLogo.svg";
 
 type labelsType = {
   title: string;
@@ -19,13 +20,14 @@ type labelsType = {
 };
 
 const labels: labelsType[] = [
-  { title: "done", size: "w-2/12" },
-  { title: "ticket", size: "w-2/6" },
-  { title: "type", size: "w-2/12" },
-  { title: "dev", size: "w-2/12" },
-  { title: "description", size: "w-1/3" },
-  { title: "jira_state", size: "w-1/3" },
-  { title: "enviroment", size: "w-2/6" },
+  { title: "done", size: "w-1/6" },
+  { title: "ticket", size: "w-1/5" },
+  { title: "type", size: "w-1/6" },
+  { title: "dev", size: "w-1/6" },
+  { title: "description", size: "w-1/2" },
+  { title: "jira state", size: "w-1/3" },
+  { title: "enviroment", size: "w-1/4" },
+  { title: "app", size: "w-1/6" },
   { title: "sprint", size: "w-2/6" },
   { title: "actions", size: "w-2/6" },
 ];
@@ -124,6 +126,8 @@ function App() {
       enviroment: item.enviroment,
       dev: item.dev,
       jira: item.jira,
+      jira_state: item.jira_state,
+      app: item.app,
       sprint: item.sprint,
     });
     setTaskModal(true);
@@ -198,7 +202,7 @@ function App() {
   }) => JSX.Element = ({ label, size }) => {
     return (
       <div
-        className={`flex ${size} overflow-hidden justify-start items-center py-2 text-slate-300`}
+        className={`flex ${size} overflow-hidden justify-start items-center text-slate-300`}
       >
         {label}
       </div>
@@ -238,16 +242,18 @@ function App() {
       >
         <Cell
           label={<input type="checkbox" checked={item.done} readOnly />}
-          size="w-2/12"
+          size="w-1/6"
         />
-        <Cell label={item.ticket} size="w-2/6" />
-        <Cell label={item.type} size="w-2/12" />
-        <Cell label={item.dev} size="w-2/12" />
+        <Cell label={item.ticket} size="w-1/5" />
+        <Cell label={item.type} size="w-1/6" />
+        <Cell label={item.dev} size="w-1/6" />
         <Cell
-          label={item.description?.substring(0, 30).concat("..")}
+          label={item.description?.substring(0, 25).concat("..")}
           size="w-1/2"
         />
-        <Cell label={item.enviroment} size="w-2/6" />
+        <Cell label={item.jira_state} size="w-1/3" />
+        <Cell label={item.enviroment} size="w-1/4" />
+        <Cell label={item.app} size="w-1/6" />
         <Cell label={item.sprint} size="w-2/6" />
 
         <div className="flex w-2/6 flex-row gap-5 text-slate-300 items-center justify-start">
@@ -289,8 +295,13 @@ function App() {
   return (
     <div className="bg-slate-950 flex flex-1 h-screen justify-start flex-col overflow-y-hidden">
       <div className="flex w-full text-center  justify-center items-center">
+        <div className="w-1/6 flex justify-start pl-5 items-center">
+          <div className="rounded-full p-2 border overflow-hidden">
+            <img src={nnnp} className="w-14 h-14" />
+          </div>
+        </div>
         <div className="flex flex-1 justify-center">
-          <h1 className="text-4xl text-white">CHANGOS</h1>
+          <h1 className="text-4xl text-slate-300 font-black">CHANGOS</h1>
         </div>
         <div className="flex flex-row gap-5 p-4">
           {!login ? (
@@ -393,7 +404,7 @@ function App() {
         </div>
 
         <Header labels={labels} />
-        <div className="flex flex-col h-3/4 bg-slate-900 overflow-y-auto">
+        <div className="flex flex-col h-3/4 bg-slate-900 overflow-y-auto no-scrollbar">
           {data
             ? data
                 .sort((a: any, b: any) => {
