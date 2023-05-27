@@ -1,11 +1,13 @@
 export interface Task {
   _id?: string;
+  sprint?: string;
   ticket: string;
-  type: string;
-  description: string;
-  done: boolean;
-  enviroment: string;
-  dev: string;
-  jira: string;
-  sprint: string;
+  jira?: string;
+  jira_state?: string;
+  enviroment?: string;
+  type?: string;
+  app?: string;
+  dev?: string;
+  description?: string;
+  done?: boolean;
 }
