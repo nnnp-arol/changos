@@ -8,4 +8,4 @@ const profile2 = { user: "arol", password: "12qwaszx", img: prof2 };
 const profile3 = { user: "agu", password: "12qwaszx", img: prof3 };
 const profile4 = { user: "juli", password: "qweasdzxc", img: prof4 };
 
-export const profiles = [profile1, profile2, profile3];
+export const profiles = [profile1, profile2, profile3, profile4];
