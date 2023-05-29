@@ -1,7 +1,8 @@
 import axios from "axios";
 import { Task } from "../utils/interfaces";
 const http = axios.create({
-  baseURL: "https://changos-api.fly.dev",
+  baseURL: "https://changos-api-production.up.railway.app/",
+  // baseURL: "http://localhost:8080/",
 });
 
 export const getTasks = async () => {
